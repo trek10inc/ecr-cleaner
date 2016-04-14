@@ -1,0 +1,30 @@
+{
+  "name": "main",
+  "runtime": "nodejs",
+  "description": "Serverless Lambda function for project: ecr-cleaner",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 300,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {
+    "excludePatterns": []
+  },
+  "endpoints": [],
+  "events": [],
+  "environment": {
+    "SERVERLESS_PROJECT": "${project}",
+    "SERVERLESS_STAGE": "${stage}",
+    "SERVERLESS_REGION": "${region}",
+    "AWS_ACCOUNT_ID": "${awsAccountId}",
+    "REPO_REGION": "${repoRegion}",
+    "ECS_REGION": "${ecsRegion}",
+    "REPO_AGE_THRESHOLD": "${repoAgeThreshold}",
+    "REPO_TO_CLEAN": "${repoToClean}"
+  },
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
+}

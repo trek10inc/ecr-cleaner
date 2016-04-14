@@ -1,0 +1,16 @@
+{
+  "name": "main",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stephen Ennis <stennis@trek10.com> (https://www.trek10.com)",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.3.3",
+    "bluebird": "^3.3.5",
+    "lodash": "^4.11.0"
+  }
+}

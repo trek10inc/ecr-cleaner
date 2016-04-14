@@ -1,0 +1,10 @@
+{
+  "name": "ecr-cleaner",
+  "version": "0.0.1",
+  "profile": "serverless-v0.5.3",
+  "location": "git://github.com/trek10inc/ecr-cleaner",
+  "author": "Stephen Ennis",
+  "description": "A Serverless implementation for cleaner ECR Repositories with some intelligence.",
+  "custom": {},
+  "plugins": []
+}

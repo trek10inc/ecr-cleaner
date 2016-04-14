@@ -1,0 +1,13 @@
+{
+  "name": "ecr-cleaner",
+  "version": "0.0.1",
+  "description": "A Serverless implementation for cleaner ECR Repositories with some intelligence.",
+  "author": "stennis@trek10.com",
+  "license": "MIT",
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/trek10inc/ecr-cleaner"
+  },
+  "dependencies": {}
+}
