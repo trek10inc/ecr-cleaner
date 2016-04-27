@@ -1,6 +1,10 @@
 # Serverless ECR Cleaner
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 
+<p align="center">
+  <img src="https://cloud.githubusercontent.com/assets/1689118/14857262/899bbf5e-0c69-11e6-89fb-e5f9789e32bf.png" />
+</p>
+
 ## Setup
 Requires Serverless to be installed (Project currently Serverless v0.5.x)
 
