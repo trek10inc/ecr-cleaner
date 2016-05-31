@@ -35,7 +35,7 @@ module.exports.handler = function(event, context) {
   }
 
   if(!process.env.REPO_TO_CLEAN){
-    console.error('WARN: NO REPO_TO_CLEAN, defaulting to us-east-1');
+    console.error('ERROR: NO REPO_TO_CLEAN, must be set');
     return context.fail(new Error('Must set REPO_TO_CLEAN'));
   }
 
