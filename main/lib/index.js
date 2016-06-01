@@ -5,8 +5,8 @@ var Promise = require('bluebird');
 var _ = require('lodash');
 
 
-var ecr = Promise.promisifyAll(new AWS.ECR({region: process.env.REPO_REGION}));
-var ecs = Promise.promisifyAll(new AWS.ECS({region: process.env.ECS_REGION}));
+var ecr = Promise.promisifyAll(new AWS.ECR({region: process.env.REPO_REGION, maxRetries: 3}));
+var ecs = Promise.promisifyAll(new AWS.ECS({region: process.env.ECS_REGION, maxRetries: 3}));
 
 /**
  * Lib
