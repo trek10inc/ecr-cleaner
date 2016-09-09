@@ -64,13 +64,19 @@ exports.deleteImages = function (images) {
     // Make sure we are doing this for real
     if (process.env.DRY_RUN !== 'true') {
       if (imageTagsToDelete.length > 0) {
-        var params = {
-          imageIds: imageTagsToDelete,
-          repositoryName: process.env.REPO_TO_CLEAN
-        };
+        var imageBatches = [];
 
-        // Batch delete all images in the deletionQueue
-        ecr.batchDeleteImageAsync(params)
+        while (imageTagsToDelete.length > 0) {
+          imageBatches.push(imageTagsToDelete.splice(0, 100));
+        }
+
+        Promise.mapSeries(imageBatches, function (imageBatch) {
+          var params = {
+            imageIds: imageBatch,
+            repositoryName: process.env.REPO_TO_CLEAN
+          };
+          return ecr.batchDeleteImageAsync(params);
+        })
           .then(function (deletions) {
             resolve({
               failures: deletions.failures,
@@ -134,7 +140,7 @@ exports.filterOutActiveImages = function (eligibleForDeletion) {
                   return _.map(containerDefinition, 'image');
                 }).value();
             });
-        }, {concurrency: ECS_CONCURRENCY}).then(resolve);
+        }, { concurrency: ECS_CONCURRENCY }).then(resolve);
         // concurrency set so that ecs doesn't get upset about a lot of calls very quickly
       });
     }).then(function (allImages) {
@@ -153,38 +159,42 @@ exports.filterOutActiveImages = function (eligibleForDeletion) {
 //   set via REPO_AGE_THRESHOLD (90 days by default)
 exports.filterImagesByDateThreshold = function (images) {
   console.info('IMAGES TO PROCESS:', images);
-  var params = {
-    imageIds: images.imageIds,
-    repositoryName: process.env.REPO_TO_CLEAN
-  };
+  var imageBatches = [];
 
-  return ecr.batchGetImageAsync(params)
-    .then(function (imageDetails) {
+  while (images.imageIds.length > 0) {
+    imageBatches.push(images.imageIds.splice(0, 100));
+  }
+  return Promise.mapSeries(imageBatches, function (imageBatch) {
+    var params = {
+      imageIds: imageBatch,
+      repositoryName: process.env.REPO_TO_CLEAN
+    };
+    return ecr.batchGetImageAsync(params);
+  }).then(function (imageDetails) {
+    // Get all tags eligible for deletion by age threshold
+    //   coerce each of the tags to a full image reference for easy comparison
+    var eligibleForDeletion = _.map(imageDetails.images, function (image) {
 
-      // Get all tags eligible for deletion by age threshold
-      //   coerce each of the tags to a full image reference for easy comparison
-      var eligibleForDeletion = _.map(imageDetails.images, function (image) {
+      var created = JSON.parse(JSON.parse(image.imageManifest)
+        .history[0]
+        .v1Compatibility).created;
 
-        var created = JSON.parse(JSON.parse(image.imageManifest)
-          .history[0]
-          .v1Compatibility).created;
+      var imageTag = JSON.parse(image.imageManifest).tag;
 
-        var imageTag = JSON.parse(image.imageManifest).tag;
-
-        if (created &&
-          imageTag !== 'latest' &&
-          getImageAgeDays(created) >= process.env.REPO_AGE_THRESHOLD) {
-          return process.env.AWS_ACCOUNT_ID +
-            '.dkr.ecr.' +
-            process.env.REPO_REGION +
-            '.amazonaws.com/' +
-            process.env.REPO_TO_CLEAN +
-            ':' + imageTag;
-        } else {
-          return null;
-        }
-      });
-
-      return _.compact(eligibleForDeletion);
+      if (created &&
+        imageTag !== 'latest' &&
+        getImageAgeDays(created) >= process.env.REPO_AGE_THRESHOLD) {
+        return process.env.AWS_ACCOUNT_ID +
+          '.dkr.ecr.' +
+          process.env.REPO_REGION +
+          '.amazonaws.com/' +
+          process.env.REPO_TO_CLEAN +
+          ':' + imageTag;
+      } else {
+        return null;
+      }
     });
+
+    return _.compact(eligibleForDeletion);
+  });
 };
