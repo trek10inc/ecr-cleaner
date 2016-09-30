@@ -21,12 +21,12 @@ module.exports.handler = function(event, context) {
 
   if(!process.env.REPO_REGION){
     console.warn('WARN: NO REPO_REGION, defaulting to us-east-1');
-    process.env.AWS_REGION = 'us-east-1';
+    process.env.REPO_REGION = 'us-east-1';
   }
 
   if(!process.env.ECS_REGION){
     console.warn('WARN: NO ECS_REGION, defaulting to us-east-1');
-    process.env.AWS_REGION = 'us-east-1';
+    process.env.ECS_REGION = 'us-east-1';
   }
 
   if(!process.env.REPO_AGE_THRESHOLD){
