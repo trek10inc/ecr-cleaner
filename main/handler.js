@@ -31,7 +31,7 @@ module.exports.handler = function(event, context) {
 
   if(!process.env.REPO_AGE_THRESHOLD){
     console.warn('WARN: NO REPO_AGE_THRESHOLD, defaulting to 90 days');
-    process.env.AWS_REGION = 90;
+    process.env.REPO_AGE_THRESHOLD = 90;
   }
 
   if(!process.env.REPO_TO_CLEAN){
