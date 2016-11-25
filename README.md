@@ -20,10 +20,10 @@ Install Dependencies
 `cd main && npm install`
 
 
-Setup environment variables...
+Setup environment variables... (Be sure to remove the comments!)
 
 ```
-# _meta/s-variables-common.json
+# _meta/variables/s-variables-common.json
 
 {
   "project": "ecr-cleaner",
@@ -87,7 +87,7 @@ console or when running locally.
 	"dryRun":true
 }
 
-// Local run command: serverless function run main -s dev
+// Local run command: sls function run main --stage dev
 ```
 
 # Many Thanks
