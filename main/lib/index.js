@@ -38,7 +38,8 @@ function iterateImages(params, previousResults) {
       previousResults = previousResults.concat(data.imageIds);
       if (data.nextToken) {
         params.nextToken = data.nextToken;
-        return iterateImages(params, previousResults);
+        return Promise.delay(500)
+          .iterateImages(params, previousResults);
       } else {
         return { imageIds: previousResults };
       }
@@ -113,7 +114,8 @@ function iterateTaskDefinitions(params, previousResults) {
       previousResults = previousResults.concat(data.taskDefinitionArns);
       if (data.nextToken) {
         params.nextToken = data.nextToken;
-        return iterateTaskDefinitions(params, previousResults);
+        return Promise.delay(500)
+          .iterateTaskDefinitions(params, previousResults);
       } else {
         return { taskDefinitionArns: previousResults };
       }
