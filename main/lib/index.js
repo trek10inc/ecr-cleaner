@@ -9,6 +9,7 @@ var ecr = Promise.promisifyAll(new AWS.ECR({ region: process.env.REPO_REGION, ma
 var ecs = Promise.promisifyAll(new AWS.ECS({ region: process.env.ECS_REGION, maxRetries: 3 }));
 
 var ECS_CONCURRENCY = 10;
+var API_DELAY = 1000; // ms
 
 /**
  * Lib
@@ -38,7 +39,8 @@ function iterateImages(params, previousResults) {
       previousResults = previousResults.concat(data.imageIds);
       if (data.nextToken) {
         params.nextToken = data.nextToken;
-        return Promise.delay(500).then(function (){
+        return Promise.delay(API_DELAY)
+        .then(function (){
           return iterateImages(params, previousResults);
         });
       } else {
@@ -115,7 +117,8 @@ function iterateTaskDefinitions(params, previousResults) {
       previousResults = previousResults.concat(data.taskDefinitionArns);
       if (data.nextToken) {
         params.nextToken = data.nextToken;
-        return Promise.delay(500).then(function (){
+        return Promise.delay(API_DELAY)
+        .then(function (){
           return iterateTaskDefinitions(params, previousResults);
         });
       } else {
