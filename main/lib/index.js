@@ -38,8 +38,9 @@ function iterateImages(params, previousResults) {
       previousResults = previousResults.concat(data.imageIds);
       if (data.nextToken) {
         params.nextToken = data.nextToken;
-        return Promise.delay(500)
-          .iterateImages(params, previousResults);
+        return Promise.delay(500).then(function (){
+          return iterateImages(params, previousResults);
+        });
       } else {
         return { imageIds: previousResults };
       }
@@ -114,8 +115,9 @@ function iterateTaskDefinitions(params, previousResults) {
       previousResults = previousResults.concat(data.taskDefinitionArns);
       if (data.nextToken) {
         params.nextToken = data.nextToken;
-        return Promise.delay(500)
-          .iterateTaskDefinitions(params, previousResults);
+        return Promise.delay(500).then(function (){
+          return iterateTaskDefinitions(params, previousResults);
+        });
       } else {
         return { taskDefinitionArns: previousResults };
       }
