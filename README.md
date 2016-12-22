@@ -35,7 +35,9 @@ Setup environment variables... (Be sure to remove the comments!)
   "repoRegion": "us-east-1", // DEFAULT
   "ecsRegion": "us-east-1", // DEFAULT
   "repoAgeThreshold": 90, // DEFAULT
-  "awsAccountId": "123456789012"
+  "awsAccountId": "123456789012",
+  "ecsConcurrency": 10, // DEFAULT
+  "apiDelay": 500 // DEFAULT
 }
 ```
 

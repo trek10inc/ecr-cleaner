@@ -21,7 +21,9 @@
     "REPO_REGION": "${repoRegion}",
     "ECS_REGION": "${ecsRegion}",
     "REPO_AGE_THRESHOLD": "${repoAgeThreshold}",
-    "REPO_TO_CLEAN": "${repoToClean}"
+    "REPO_TO_CLEAN": "${repoToClean}",
+    "ECS_CONCURRENCY": "${ecsConcurrency}",
+    "API_DELAY": "${apiDelay}"
   },
   "vpc": {
     "securityGroupIds": [],

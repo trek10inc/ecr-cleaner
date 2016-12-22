@@ -34,6 +34,16 @@ module.exports.handler = function(event, context) {
     process.env.REPO_AGE_THRESHOLD = 90;
   }
 
+  if(!process.env.ECS_CONCURRENCY){
+    console.warn('WARN: NO ECS_CONCURRENCY, defaulting to 10 concurrent promises');
+    process.env.ECS_CONCURRENCY = 10;
+  }
+
+  if(!process.env.API_DELAY){
+    console.warn('WARN: NO API_DELAY, defaulting to 500 milliseconds');
+    process.env.API_DELAY = 500;
+  }
+
   if(!process.env.REPO_TO_CLEAN){
     console.error('ERROR: NO REPO_TO_CLEAN, must be set');
     return context.fail(new Error('Must set REPO_TO_CLEAN'));

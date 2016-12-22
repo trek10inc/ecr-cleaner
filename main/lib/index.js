@@ -8,8 +8,8 @@ var _ = require('lodash');
 var ecr = Promise.promisifyAll(new AWS.ECR({ region: process.env.REPO_REGION, maxRetries: 3 }));
 var ecs = Promise.promisifyAll(new AWS.ECS({ region: process.env.ECS_REGION, maxRetries: 3 }));
 
-var ECS_CONCURRENCY = 10;
-var API_DELAY = 1000; // ms
+var ECS_CONCURRENCY = parseInt(process.env.ECS_CONCURRENCY);
+var API_DELAY = parseInt(process.env.API_DELAY); // ms
 
 /**
  * Lib
@@ -138,6 +138,7 @@ exports.filterOutActiveImages = function (eligibleForDeletion) {
         Promise.map(taskDefs.taskDefinitionArns, function (taskDefinitionARN) {
           // Get all active images from all container defintions
           return ecs.describeTaskDefinitionAsync({ taskDefinition: taskDefinitionARN })
+            .tap(function(){ return Promise.delay(API_DELAY); })
             .then(function (taskDefinitionDetails) {
               return _.chain(taskDefinitionDetails)
                 .map(function (taskDefinitionDetail) {
