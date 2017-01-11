@@ -14,6 +14,16 @@ module.exports.handler = function(event, context) {
     process.env.DRY_RUN = false;
   }
 
+  if(event.repoAgeThreshold){
+    process.env.REPO_AGE_THRESHOLD = event.repoAgeThreshold;
+  }else{
+    process.env.REPO_AGE_THRESHOLD = 90;
+  }
+
+  if(event.cleaningRepos){
+    process.env.REPO_TO_CLEAN = event.cleaningRepos;
+  }
+
   if(!process.env.AWS_ACCOUNT_ID){
     console.warn('WARN: NO AWS_ACCOUNT_ID, defaulting to current account');
     process.env.AWS_ACCOUNT_ID = context.invoked_function_arn.split(':')[4];
@@ -49,14 +59,25 @@ module.exports.handler = function(event, context) {
     return context.fail(new Error('Must set REPO_TO_CLEAN'));
   }
 
-  var params = {
-    repositoryName: process.env.REPO_TO_CLEAN
-  };
+  var reposToClean = process.env.REPO_TO_CLEAN.split(',');
+  var repoPromises = [];
 
-  lib.getRepoImages(params)
-    .then(lib.filterImagesByDateThreshold)
-    .then(lib.filterOutActiveImages)
-    .then(lib.deleteImages)
+  for (var i = reposToClean.length - 1; i >= 0; i--) {
+    var thisRepo = reposToClean[i];
+    var params = {
+      repositoryName: thisRepo
+    };
+
+    var repoPromise = lib.getRepoImages(params)
+      .then(lib.filterImagesByDateThreshold.bind(undefined, thisRepo))
+      .then(lib.filterOutActiveImages)
+      .then(lib.deleteImages.bind(undefined, thisRepo))
+      .catch(context.fail);
+    repoPromises.push(repoPromise);
+  }
+
+  Promise.all(repoPromises)
     .then(context.succeed)
     .catch(context.fail);
+
 };
