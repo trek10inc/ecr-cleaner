@@ -14,15 +14,6 @@ module.exports.handler = function(event, context) {
     process.env.DRY_RUN = false;
   }
 
-  if(event.repoAgeThreshold){
-    process.env.REPO_AGE_THRESHOLD = event.repoAgeThreshold;
-  }else{
-    process.env.REPO_AGE_THRESHOLD = 90;
-  }
-
-  if(event.cleaningRepos){
-    process.env.REPO_TO_CLEAN = event.cleaningRepos;
-  }
 
   if(!process.env.AWS_ACCOUNT_ID){
     console.warn('WARN: NO AWS_ACCOUNT_ID, defaulting to current account');
