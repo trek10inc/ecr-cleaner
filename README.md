@@ -1,4 +1,9 @@
 # Serverless ECR Cleaner
+
+## This project is deprecated
+
+Try [ECR lifecycle policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/LifecyclePolicies.html) to clean up old images.
+
 [![serverless](http://public.serverless.com/badges/v3.svg)](http://www.serverless.com)
 
 <p align="center">
