@@ -27,6 +27,8 @@ Install Dependencies
 
 Setup environment variables... (Be sure to remove the comments!)
 
+If you want to clean multiple repositories, separate them with commas as below:
+
 ```
 # _meta/variables/s-variables-common.json
 
@@ -36,7 +38,7 @@ Setup environment variables... (Be sure to remove the comments!)
   "domain": "ecr-cleaner",
   "notificationEmail": "johndoe@example.com",
   "region": "us-east-1",
-  "repoToClean": "ecr-cleanup-target",
+  "repoToClean": "ecr-cleanup-target,another-target",
   "repoRegion": "us-east-1", // DEFAULT
   "ecsRegion": "us-east-1", // DEFAULT
   "repoAgeThreshold": 90, // DEFAULT
@@ -96,6 +98,8 @@ console or when running locally.
 
 // Local run command: sls function run main --stage dev
 ```
+
+
 
 # Many Thanks
 

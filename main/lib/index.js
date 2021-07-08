@@ -55,18 +55,19 @@ exports.getRepoImages = function (params) {
 
 
 // Takes an argument of an array of full image definitions
-//   and splits into tags to delete from the REPO_TO_CLEAN repo
-exports.deleteImages = function (images) {
+//   and splits into tags to delete from the repository specified.
+exports.deleteImages = function (repo, images) {
   return new Promise(function (resolve) {
     console.info('IMAGES TO DELETE:', images);
+    console.info('IN REPO:', repo);
     var imageTagsToDelete = _.map(images, function (image) {
       return { imageTag: image.split(':')[1] };
     });
 
     console.info('IMAGE TAGS TO DELETE:', imageTagsToDelete);
-
     // Make sure we are doing this for real
     if (process.env.DRY_RUN !== 'true') {
+      console.info('DELETING');
       if (imageTagsToDelete.length > 0) {
         var imageBatches = [];
 
@@ -77,27 +78,29 @@ exports.deleteImages = function (images) {
         Promise.mapSeries(imageBatches, function (imageBatch) {
           var params = {
             imageIds: imageBatch,
-            repositoryName: process.env.REPO_TO_CLEAN
+            repositoryName: repo
           };
           return ecr.batchDeleteImageAsync(params);
-        })
-          .then(function (deletions) {
+        }).then(function (deletions) {
             resolve({
+              repo: repo,
               failures: deletions.failures,
               imagesDeleted: deletions.imageIds,
               count: _.keys(deletions.imageIds).length
             });
           });
-      } else {
-        resolve({
+      } else{
+         resolve({
+          repo: repo,
           failures: [],
           imagesDeleted: [],
           count: 0
         });
       }
     } else {
-      // Fake Results
+      console.info('NOT DELETING');
       resolve({
+        repo: repo,
         dryRun: true,
         failures: [],
         imagesDeleted: imageTagsToDelete,
@@ -165,7 +168,7 @@ exports.filterOutActiveImages = function (eligibleForDeletion) {
 // Fetch all layers / image details from the repo
 // Filter out everything newer than some variable amount of days
 //   set via REPO_AGE_THRESHOLD (90 days by default)
-exports.filterImagesByDateThreshold = function (images) {
+exports.filterImagesByDateThreshold = function (repo, images) {
   console.info('IMAGES TO PROCESS:', images);
   var imageBatches = [];
 
@@ -175,13 +178,13 @@ exports.filterImagesByDateThreshold = function (images) {
   return Promise.mapSeries(imageBatches, function (imageBatch) {
     var params = {
       imageIds: imageBatch,
-      repositoryName: process.env.REPO_TO_CLEAN
+      repositoryName: repo
     };
     return ecr.batchGetImageAsync(params);
   }).then(function (imageDetails) {
     // Get all tags eligible for deletion by age threshold
     //   coerce each of the tags to a full image reference for easy comparison
-    var eligibleForDeletion = _.map(imageDetails.images, function (image) {
+    var eligibleForDeletion = _.map(imageDetails[0].images, function (image) {
 
       var created = JSON.parse(JSON.parse(image.imageManifest)
         .history[0]
@@ -196,7 +199,7 @@ exports.filterImagesByDateThreshold = function (images) {
           '.dkr.ecr.' +
           process.env.REPO_REGION +
           '.amazonaws.com/' +
-          process.env.REPO_TO_CLEAN +
+          repo +
           ':' + imageTag;
       } else {
         return null;
